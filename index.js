@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
 import { Client } from "@gradio/client";
+import { Blob } from "buffer"; // <- penting untuk Node.js
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -25,21 +26,16 @@ app.post("/predict", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-    const buffer = req.file.buffer;
-    const filename = req.file.originalname;
+    // Convert buffer to Blob
+    const imageBlob = new Blob([req.file.buffer]);
 
-    // Upload to Gradio
-    const uploaded = await client.upload(buffer, filename);
-
-    // Predict with uploaded file
-    const result = await client.predict("/predict", {
-      image_array: uploaded,
-    });
+    // Use Gradio client directly
+    const result = await client.predict("/predict", [imageBlob]);
 
     res.status(200).json({ predictions: result });
   } catch (err) {
     console.error("Prediction error:", err);
-    res.status(500).json({ error: "Prediction failed" });
+    res.status(500).json({ error: "Prediction failed", detail: err.message });
   }
 });
 
