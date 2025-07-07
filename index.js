@@ -41,7 +41,7 @@ app.post("/predict", upload.single("file"), async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Prediction error");
+    res.status(500).send(err);
   }
 });
 // Serve the app
