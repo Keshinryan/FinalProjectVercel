@@ -24,7 +24,7 @@ app.post("/predict", upload.single("file"), async (req, res) => {
     // Call Gradio predict
     const result = await client.predict("/predict", [imageBlob]);
 
-    res.status(200).json(result.data );
+    res.status(200).json(result.data[0]);
   } catch (err) {
     console.error("Prediction error:", err);
     res.status(500).json({ error: "Prediction failed", detail: err.message });
