@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { Client, handleFile } from "@gradio/client";
+import { Client } from "@gradio/client";
 import { Blob } from "buffer"; // Needed to define Blob in Node.js
 
 const app = express();
@@ -32,12 +32,15 @@ app.post("/predict", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // Convert buffer to a format Gradio can handle
-    const handledFile = await handleFile(req.file.buffer, req.file.originalname);
+    const buffer = req.file.buffer;
+    const filename = req.file.originalname;
 
-    // Use correct endpoint name if you use api_name="/predict" in Gradio
+    // Upload image via Gradio client
+    const uploaded = await client.upload(buffer, filename);
+
+    // Panggil predict
     const result = await client.predict("/predict", {
-      image_array: handledFile
+      image_array: uploaded
     });
 
     res.status(200).json({
