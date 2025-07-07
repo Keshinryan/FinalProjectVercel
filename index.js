@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
     res.status(200).json({ message: 'API TaxoClassify with Vercel js and Gradio is running' });
 });
 
-app.post("/predict", upload.single("image"), async (req, res) => {
+app.post("/predict", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return res.status(400).send("No file uploaded");
 
